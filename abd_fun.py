@@ -9,7 +9,7 @@ bot = telebot.TeleBot(mcfg_abd.bot_token)
 
 def check_admin(message):
     admins = {'id':[
-        193776212
+        193776212,237028854
     ],
     'login':[
         'xenia_lapatina'
@@ -31,12 +31,12 @@ def default_message(message):
 id
 --
 Остальные команды:
-/show - отобразить дедлайн (-14;+30)
+/show - отобразить дедлайн (-8;+15)
 /showall - отобразить дедлайны (-14;все)
 /start - подключить себя к рассылке
 /turnoff - отключить себя от рассылки
 /dash - ссылка на дашборд'''
-    default_message_all = '''/show - отобразить дедлайн (-14;+30)
+    default_message_all = '''/show - отобразить дедлайн (-8;+15)
 /showall - отобразить дедлайны (-14;все)
 /start - подключить себя к рассылке
 /turnoff - отключить себя от рассылки
@@ -48,17 +48,19 @@ id
 
 def show(message,all=False):
     if not all:
-        df = pd.read_sql('''select date(dtime) dt,d_nm,d_type,id,
-(extract(day from dtime-now()))::integer days
-from deadline_table dt 
-where now() - interval '14' day < dtime
-and now() + interval '30' day > dtime
+        df = pd.read_sql('''select date(dtime) dt,d_nm,d_type,id,link,
+dtime::date-now()::date days
+from deadline_view dt 
+where 
+now()::date - interval '8' day < dtime
+and 
+((now()::date + interval '15' day > dtime and d_type = 'кс') or d_type != 'кс')
 order by dtime''',con=mcfg_abd.conn2())
     else:
-        df = pd.read_sql('''select date(dtime) dt,d_nm,d_type,id,
-(extract(day from dtime-now()))::integer days
-from deadline_table dt 
-where now() - interval '14' day < dtime
+        df = pd.read_sql('''select date(dtime) dt,d_nm,d_type,id,link,
+dtime::date-now()::date days
+from deadline_view dt 
+where now()::date - interval '15' day < dtime
 order by dtime ''',con=mcfg_abd.conn2())
         
     cnt=1
@@ -67,12 +69,12 @@ order by dtime ''',con=mcfg_abd.conn2())
     for index,row in df.iterrows():
         text += f"""{row['d_type']} ({row['days']} дн.)
 {row['dt']} (id {row['id']})
-{row['d_nm']}
+<a href="{row['link']}">{row['d_nm']}</a>
 """
         cnt+=1
         if cnt <= length:
             text+='-\n'
-    bot.send_message(message.from_user.id,text)
+    bot.send_message(message.from_user.id,text, parse_mode='HTML')
 
 def create_user(message):
     conn = mcfg_abd.conn2()
@@ -157,4 +159,6 @@ def add_deadline(message):
         bot.send_message(message.from_user.id, f'неправильный формат!')
 
 def dash(message):
-    bot.send_message(message.from_user.id, f'ссылка на дашборд\nhttps://datalens.yandex/moq9iz7pv67a9')
+    text = '''<a href="https://datalens.yandex/moq9iz7pv67a9">ссылка на дашборд</a>
+<a href="https://docs.google.com/spreadsheets/d/13lHNf6xU6tZhqzVMAb8sV3RgyyDatepwo7FJ6FhZ0vY/edit?gid=1036789569#gid=1036789569">дедлайны в гугл листах</a>'''
+    bot.send_message(message.from_user.id, text, parse_mode='HTML', disable_web_page_preview=True)
