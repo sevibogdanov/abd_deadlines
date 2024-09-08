@@ -8,4 +8,5 @@ gs_to_pg.py - перенос из google sheets в postgres
 * mcfg_abd - содержит токен и функции подключения к постгресу  
 
 Схема:  
-![Схема бота](https://github.com/user-attachments/assets/c895da3b-6952-409f-b6e9-45572a737f5d)
+![Схема бота](https://github.com/user-attachments/assets/aa1e93a1-b54b-4a58-8b7d-4cbe3376ef63)
+
