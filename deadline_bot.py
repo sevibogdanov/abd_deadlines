@@ -7,22 +7,50 @@ bot = telebot.TeleBot(mcfg_abd.bot_token)
 @bot.message_handler(commands=['start'])
 def start_f(message):
     abd_fun.start(message)
+    abd_fun.log(message)
 
 @bot.message_handler(commands=['show'])
 def start(message):
     abd_fun.show(message)
+    abd_fun.log(message)
+
+@bot.message_handler(commands=['reload'])
+def reload_gs(message):
+    abd_fun.log(message)
+    if abd_fun.check_admin(message):
+        abd_fun.reload(message)
+    else:
+        abd_fun.default_message(message)
+
+@bot.message_handler(commands=['schedule'])
+def schedule_show(message):
+    abd_fun.schedule(message)
+    abd_fun.log(message)
+
+@bot.message_handler(commands=['scheduleon'])
+def schedule_on(message):
+    abd_fun.scheduleon(message)
+    abd_fun.log(message)
+
+@bot.message_handler(commands=['scheduleoff'])
+def schedule_off(message):
+    abd_fun.scheduleoff(message)
+    abd_fun.log(message)
 
 @bot.message_handler(commands=['showall'])
 def start(message):
     abd_fun.show(message,all=True)
+    abd_fun.log(message)
 
 @bot.message_handler(commands=['turnoff'])
 def start(message):
     abd_fun.turnoff(message)
+    abd_fun.log(message)
 
 @bot.message_handler(commands=['dash'])
 def dash(message):
     abd_fun.dash(message)
+    abd_fun.log(message)
 
 @bot.message_handler()
 def handle_text(message):
@@ -37,5 +65,7 @@ def handle_text(message):
             abd_fun.default_message(message)
     else:
         abd_fun.default_message(message)
+
+    abd_fun.log(message)
 
 bot.polling(none_stop=True, interval=1)

@@ -1,5 +1,4 @@
 import telebot
-import datetime
 import mcfg_abd
 import time
 import pandas as pd
@@ -45,7 +44,8 @@ if len(df) > 0:
         cnt+=1
         if cnt <= length:
             text+='-\n'
-
+    
+    text+= '\n /turnoff - для отключения рассылки (напоминание о дедлайнах на сегодня и через 3 дня)'
 
     for id in ids:
         time.sleep(1)
